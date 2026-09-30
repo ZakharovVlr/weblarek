@@ -1,25 +1,16 @@
-import { Api } from './base/Api'; // Импортируем сам класс Api вместо IApi
-import { IProduct, IProductsResponse, IOrderPost, IOrderResult } from '../types';
+import { IApi, IProductsResponse, IOrderPost, IOrderResult } from '../types';
 
 export class LarekAPI {
-    protected api: Api; // Указываем тип Api (композиция)
-    protected cdn: string;
+    protected api: IApi;
 
-    // Конструктор принимает экземпляр класса Api
-    constructor(api: Api, cdn: string) {
+    // Конструктор принимает только экземпляр, соответствующий интерфейсу IApi
+    constructor(api: IApi) {
         this.api = api;
-        this.cdn = cdn;
     }
 
-    // Получение массива товаров с сервера
-    getProducts(): Promise<IProduct[]> {
-        return this.api.get('/product/').then((data) => {
-            const res = data as IProductsResponse;
-            return res.items.map((item) => ({
-                ...item,
-                image: this.cdn + item.image,
-            }));
-        });
+    // Получение массива товаров с сервера (без преобразования CDN)
+    getProducts(): Promise<IProductsResponse> {
+        return this.api.get('/product/').then((data) => data as IProductsResponse);
     }
 
     // Отправка данных заказа на сервер

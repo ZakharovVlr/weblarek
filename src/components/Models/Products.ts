@@ -2,7 +2,7 @@ import { IProduct } from '../../types';
 
 export class Products {
     protected items: IProduct[] = [];
-    protected preview: string | null = null;
+    protected preview: IProduct | null = null; 
 
     constructor() { }
 
@@ -17,19 +17,19 @@ export class Products {
     }
 
     // Получение одного товара по его id
-    getProduct(id: string): IProduct | null {
-        return this.items.find(item => item.id === id) || null;
+    getProduct(id: string): IProduct | undefined {
+         return this.items.find(item => item.id === id);
     }
 
     // Сохранение товара для подробного отображения
-    setPreview(id: string | null): void {
-        this.preview = id;
+    setPreview(item: IProduct | null): void {
+        this.preview = item;
     }
 
     // Получение товара для подробного отображения
     getPreview(): IProduct | null {
-        if (!this.preview) return null;
-        return this.getProduct(this.preview);
+        return this.preview;
     }
 }
+
 

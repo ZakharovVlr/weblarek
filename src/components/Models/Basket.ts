@@ -12,10 +12,7 @@ export class Basket {
 
     // Добавление товара, который был получен в параметре, в массив корзины
     add(product: IProduct): void {
-        // Делаем проверку, чтобы один и тот же товар не добавился дважды
-        if (!this.isInBasket(product.id)) {
-            this.items.push(product);
-        }
+        this.items.push(product);
     }
 
     // Удаление товара, полученного в параметре из массива корзины (по id)

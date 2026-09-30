@@ -7,7 +7,6 @@ export class User {
         email: '',
         phone: '',
     };
-    protected errors: FormErrors = {};
 
     constructor() { }
 
@@ -28,11 +27,11 @@ export class User {
     // Очистка данных после успешной оплаты
     clearUserData(): void {
         this.order = { payment: '', address: '', email: '', phone: '' };
-        this.errors = {};
     }
 
     // Проверка полей первого шага оформления (Способ оплаты и Адрес)
-    validateOrder(): boolean {
+    validateOrder(): FormErrors {
+
         const errors: FormErrors = {};
 
         if (!this.order.payment) {
@@ -42,12 +41,11 @@ export class User {
             errors.address = 'Необходимо заполнить адрес доставки';
         }
 
-        this.errors = errors;
-        return Object.keys(errors).length === 0;
+        return errors;
     }
 
     // Проверка полей второго шага оформления (Email и Телефон)
-    validateContacts(): boolean {
+    validateContacts(): FormErrors {
         const errors: FormErrors = {};
 
         if (!this.order.email.trim()) {
@@ -57,12 +55,6 @@ export class User {
             errors.phone = 'Введите номер телефона';
         }
 
-        this.errors = errors;
-        return Object.keys(errors).length === 0;
-    }
-
-    // Получение текущего состояния ошибок для отображения на форме
-    getErrors(): FormErrors {
-        return this.errors;
+        return errors;
     }
 }

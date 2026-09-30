@@ -5,38 +5,70 @@ import { Basket } from './components/Models/Basket';
 import { User } from './components/Models/User';
 import { LarekAPI } from './components/LarekAPI';
 import { API_URL, CDN_URL } from './utils/constants';
+import { apiProducts } from './utils/data';
 
-// 1. ИНИЦИАЛИЗАЦИЯ КЛАССОВ И МОДЕЛЕЙ ДАННЫХ
 const productsModel = new Products();
 const basketModel = new Basket();
 const userModel = new User();
 
-// Настройка сетевого слоя через композицию
 const baseApi = new Api(API_URL);
-const api = new LarekAPI(baseApi, CDN_URL);
+const api = new LarekAPI(baseApi);
 
-// 2. ИЗОЛИРОВАННОЕ ТЕСТИРОВАНИЕ МОДЕЛЕЙ 
-// Краткий тест модели Корзины (Basket)
-console.log('--- ТЕСТ МОДЕЛИ BASKET ---');
-console.log('Начальное количество товаров в корзине:', basketModel.getCount());
+// Проверка методов класса Products
+console.group('тест класса Products');
+productsModel.setItems(apiProducts.items);
+console.log('getItems:', productsModel.getItems());
 
-// Краткий тест модели Покупателя (User)
-console.log('--- ТЕСТ МОДЕЛИ USER ---');
-const isOrderValid = userModel.validateOrder();
-console.log('Проверка пустой формы (должно быть false):', isOrderValid);
-console.log('Ошибки валидации пустой формы:', userModel.getErrors());
+const firstProduct = productsModel.getItems()[0];
+console.log('getProduct:', productsModel.getProduct(firstProduct.id));
 
-// 3. СЕТЕВОЙ ЗАПРОС И ЗАПОЛНЕНИЕ КАТАЛОГА
+productsModel.setPreview(firstProduct);
+console.log('getPreview:', productsModel.getPreview());
+
+// Проверка методов класса Basket
+console.group('тест класса Basket');
+console.log('getCount до добавления:', basketModel.getCount());
+
+const mockItems = productsModel.getItems();
+basketModel.add(mockItems[0]);
+basketModel.add(mockItems[1]);
+console.log('getItems корзины:', basketModel.getItems());
+console.log('getCount после добавления:', basketModel.getCount());
+console.log('getTotal:', basketModel.getTotal());
+console.log('isInBasket:', basketModel.isInBasket(mockItems[0].id));
+
+basketModel.remove(mockItems[0].id);
+console.log('getItems после удаления:', basketModel.getItems());
+
+basketModel.clear();
+console.log('getItems после очистки:', basketModel.getItems());
+
+// Проверка методов класса User
+console.group('тест класса User');
+console.log('validateOrder до заполнения:', userModel.validateOrder());
+
+userModel.setField('payment', 'card');
+userModel.setField('address', 'ул. Пушкина, д. 1');
+console.log('validateOrder после заполнения:', userModel.validateOrder());
+
+userModel.setField('email', 'test@example.com');
+userModel.setField('phone', '+79991234567');
+console.log('validateContacts:', userModel.validateContacts());
+console.log('getUserData:', userModel.getUserData());
+
+userModel.clearUserData();
+console.log('getUserData после очистки:', userModel.getUserData());
+
+// Запрос к серверу
+console.group('Запрос к серверу');
 api.getProducts()
-    .then((products) => {
-        // Сохраняем полученный массив товаров в модель каталога
-        productsModel.setItems(products);
+    .then((res) => {
+        const productsWithCdn = res.items.map((item) => ({
+            ...item,
+            image: CDN_URL + item.image,
+        }));
 
-        console.log('--- ТЕСТ СЛОЯ КОММУНИКАЦИИ И МОДЕЛИ PRODUCTS ---');
-        console.log('Данные успешно получены с сервера через LarekAPI и сохранены в модель Products!');
-        console.log('Актуальный каталог товаров, извлеченный из модели:', productsModel.getItems());
+        productsModel.setItems(productsWithCdn);
+        console.log('Каталог с сервера из модели:', productsModel.getItems());
     })
-    .catch((err) => {
-        console.error('Ошибка при получении данных с сервера:', err);
-    });
-
+    .catch((err) => console.error(err));
