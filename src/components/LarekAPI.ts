@@ -10,7 +10,7 @@ export class LarekAPI {
 
     // Получение массива товаров с сервера (без преобразования CDN)
     getProducts(): Promise<IProductsResponse> {
-        return this.api.get('/product/').then((data) => data as IProductsResponse);
+        return this.api.get<IProductsResponse>('/product/');
     }
 
     // Отправка данных заказа на сервер

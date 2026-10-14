@@ -1,3 +1,5 @@
+//src/types/index.ts
+
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export interface IApi {

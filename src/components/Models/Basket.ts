@@ -1,9 +1,12 @@
+//src/components/Models/Basket.ts
+
 import { IProduct } from '../../types';
+import { IEvents } from '../base/Events';     // Рация-брокер событий
 
 export class Basket {
     protected items: IProduct[] = [];
 
-    constructor() { }
+    constructor(protected events: IEvents) {}
 
     // Получение массива товаров, которые находятся в корзине
     getItems(): IProduct[] {
@@ -13,16 +16,19 @@ export class Basket {
     // Добавление товара, который был получен в параметре, в массив корзины
     add(product: IProduct): void {
         this.items.push(product);
+        this.events.emit('basket:changed');
     }
 
     // Удаление товара, полученного в параметре из массива корзины (по id)
     remove(id: string): void {
         this.items = this.items.filter(item => item.id !== id);
+        this.events.emit('basket:changed');
     }
 
     // Очистка корзины
     clear(): void {
         this.items = [];
+        this.events.emit('basket:changed');
     }
 
     // Получение стоимости всех товаров в корзине
