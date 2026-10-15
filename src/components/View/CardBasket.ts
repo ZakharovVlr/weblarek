@@ -1,10 +1,13 @@
 //src/components/View/CardBasket.ts
 
-import { Card, ICardActions } from './Card';
-import { ensureElement } from '../../utils/utils'; // Путь к утилитам
+import { Card, ICardActions, ICardData } from './Card';
+import { ensureElement } from '../../utils/utils';
 
-// Дочерний класс (корзина)
-export class CardBasket extends Card {
+export interface IBasketCardData extends ICardData {
+    index: number;
+}
+
+export class CardBasket extends Card<IBasketCardData> {
     protected _index: HTMLElement;
     protected _deleteButton: HTMLButtonElement;
 
@@ -19,7 +22,7 @@ export class CardBasket extends Card {
         }
     }
 
-    set index(value: number){
+    set index(value: number) {
         this._index.textContent = String(value);
     }
 }

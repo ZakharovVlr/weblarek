@@ -6,17 +6,21 @@ import { IEvents } from '../base/Events';
 import { ensureElement } from '../../utils/utils';
 
 export class ContactsForm extends Form<IBuyer> {
+    protected _emailInput: HTMLInputElement;
+    protected _phoneInput: HTMLInputElement;
+
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
+
+        this._emailInput = ensureElement<HTMLInputElement>('input[name=email]', this.container);
+        this._phoneInput = ensureElement<HTMLInputElement>('input[name=phone]', this.container);
     }
 
     set email(value: string) {
-        const input = ensureElement<HTMLInputElement>('input[name=email]', this.container);
-        input.value = value;
+        this._emailInput.value = value;
     }
 
     set phone(value: string) {
-        const input = ensureElement<HTMLInputElement>('input[name=phone]', this.container);
-        input.value = value;
+        this._phoneInput.value = value;
     }
 }

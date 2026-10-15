@@ -1,8 +1,8 @@
 //src/components/View/Form.ts
 
-import { Component } from '../base/Component'; // Наш базовый чертеж для View
-import { IEvents } from '../base/Events';     // Рация-брокер событий
-import { ensureElement } from '../../utils/utils'; // Утилита для поиска в DOM
+import { Component } from '../base/Component';
+import { IEvents } from '../base/Events';
+import { ensureElement } from '../../utils/utils';
 
 interface IFormState {
     valid: boolean;
@@ -20,16 +20,15 @@ export class Form<T> extends Component<IFormState> {
         this._submit = ensureElement<HTMLButtonElement>('.button[type=submit]', this.container);
 
         this.container.addEventListener('submit', (e: Event) => {
-            e.preventDefault(); // Останавливаем перезагрузку сайта
+            e.preventDefault();
             this.events.emit(`${(this.container as HTMLFormElement).name}:submit`);
         });
 
         this.container.addEventListener('input', (e: Event) => {
-            const target = e.target as HTMLInputElement; // Узнаем, какой именно инпут вызвал событие
-            const field = target.name as keyof T;        // Забираем его имя (например, 'address')
-            const value = target.value;                  // Забираем то, что ввёл пользователь
+            const target = e.target as HTMLInputElement;
+            const field = target.name as keyof T;
+            const value = target.value;
 
-            // Отправляем пароль: "имяФормы.имяПоля:change"
             this.events.emit(`${(this.container as HTMLFormElement).name}.${String(field)}:change`, {
                 field,
                 value
@@ -37,20 +36,11 @@ export class Form<T> extends Component<IFormState> {
         });
     }
 
-    set valid(value: boolean){
-        if (value === false){
-            this._submit.disabled = true;
-        } else {
-            this._submit.disabled = false;
-        }
+    set valid(value: boolean) {
+        this._submit.disabled = !value;
     }
 
     set errors(value: string) {
-        this._errors.textContent = String(value);
+        this._errors.textContent = value;
     }
-
-    clear() {
-        (this.container as HTMLFormElement).reset();
-    }
-
 }
